@@ -1,0 +1,26 @@
+{
+  "version": "2026-borrador",
+  "nota": "Valores de EJEMPLO. Deben confirmarse contra el reglamento oficial vigente antes de usarse en serio. Cambiarlos aqui no requiere tocar codigo.",
+  "tramite": "servicio_social",
+  "horas_requeridas": 480,
+  "duracion_meses": { "min": 6, "max": 24 },
+  "matricula_regex": "^[A-Za-z0-9]{6,12}$",
+  "documentos_obligatorios": ["solicitud", "carta_aceptacion", "plan_trabajo"],
+  "fuente_base": {
+    "nombre": "solicitud",
+    "matricula": "solicitud",
+    "carrera": "solicitud",
+    "institucion": "carta_aceptacion",
+    "responsable": "carta_aceptacion",
+    "fecha_inicio": "carta_aceptacion",
+    "fecha_fin": "carta_aceptacion",
+    "horas": "plan_trabajo"
+  },
+  "umbrales": {
+    "nombre_advertencia": 80,
+    "texto_advertencia": 75,
+    "ocr_confianza_min": 60,
+    "caracteres_min": 80,
+    "tinta_firma_min": 0.004
+  }
+}

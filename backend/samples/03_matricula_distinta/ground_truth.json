@@ -1,0 +1,52 @@
+{
+  "escenario": "03_matricula_distinta",
+  "descripcion": "La matrícula del plan de trabajo no coincide con la de los otros.",
+  "documentos": {
+    "solicitud": "solicitud.pdf",
+    "carta_aceptacion": "carta_aceptacion.pdf",
+    "plan_trabajo": "plan_trabajo.pdf"
+  },
+  "errores_esperados": [
+    "matricula"
+  ],
+  "estado_esperado": "REQUIERE_CORRECCION",
+  "requiere_ocr": false,
+  "campos_escritos": {
+    "solicitud": {
+      "nombre": "Laura Beatriz Hernández Castillo",
+      "matricula": "21530177",
+      "carrera": "Ingeniería en Sistemas Computacionales",
+      "institucion": "H. Ayuntamiento de Benito Juárez",
+      "fecha_inicio": "2027-02-15",
+      "fecha_fin": "2027-08-15",
+      "horas": 480
+    },
+    "carta_aceptacion": {
+      "nombre": "Laura Beatriz Hernández Castillo",
+      "matricula": "21530177",
+      "carrera": "Ingeniería en Sistemas Computacionales",
+      "institucion": "H. Ayuntamiento de Benito Juárez",
+      "responsable": "Lic. María Fernanda Ruiz Torres",
+      "cargo_responsable": "Directora de Vinculación",
+      "fecha_inicio": "2027-02-15",
+      "fecha_fin": "2027-08-15",
+      "horas": 480
+    },
+    "plan_trabajo": {
+      "nombre": "Laura Beatriz Hernández Castillo",
+      "matricula": "21530717",
+      "carrera": "Ingeniería en Sistemas Computacionales",
+      "institucion": "H. Ayuntamiento de Benito Juárez",
+      "responsable": "Lic. María Fernanda Ruiz Torres",
+      "fecha_inicio": "2027-02-15",
+      "fecha_fin": "2027-08-15",
+      "horas": 480,
+      "actividades": [
+        "Apoyo en el mantenimiento de equipos de cómputo de las oficinas.",
+        "Elaboración de manuales de usuario para el sistema de atención ciudadana.",
+        "Soporte técnico a usuarios y registro de incidencias en la mesa de ayuda.",
+        "Respaldo periódico de información y revisión de la red local."
+      ]
+    }
+  }
+}

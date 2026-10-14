@@ -1,0 +1,48 @@
+{
+  "codigo": "solicitud",
+  "nombre": "Solicitud de servicio social",
+  "descripcion": "Solicitud que el alumno presenta para iniciar su servicio social.",
+  "version_formato": "sintetico-2026",
+  "titulos": ["solicitud de servicio social"],
+  "paginas": { "min": 1, "max": 2 },
+  "campos": {
+    "nombre": {
+      "tipo": "nombre",
+      "obligatorio": true,
+      "etiquetas": ["Nombre del alumno", "Nombre completo", "Nombre"]
+    },
+    "matricula": {
+      "tipo": "matricula",
+      "obligatorio": true,
+      "etiquetas": ["Matrícula", "Numero de control", "Número de control", "No. de control"]
+    },
+    "carrera": {
+      "tipo": "texto",
+      "obligatorio": true,
+      "etiquetas": ["Carrera", "Programa educativo"]
+    },
+    "institucion": {
+      "tipo": "texto",
+      "obligatorio": true,
+      "etiquetas": ["Institución receptora", "Institucion receptora", "Dependencia receptora", "Dependencia"]
+    },
+    "fecha_inicio": {
+      "tipo": "fecha",
+      "obligatorio": true,
+      "etiquetas": ["Fecha de inicio", "Inicio"]
+    },
+    "fecha_fin": {
+      "tipo": "fecha",
+      "obligatorio": true,
+      "etiquetas": ["Fecha de término", "Fecha de termino", "Término", "Termino"]
+    },
+    "horas": {
+      "tipo": "entero",
+      "obligatorio": true,
+      "etiquetas": ["Total de horas", "Horas a cumplir", "Horas"]
+    }
+  },
+  "firmas": [
+    { "id": "alumno", "etiqueta": "Firma del alumno", "obligatoria": true }
+  ]
+}
