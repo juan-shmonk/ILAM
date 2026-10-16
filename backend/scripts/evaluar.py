@@ -13,7 +13,7 @@ Uso (desde backend/):
 
 Cada error se identifica con una "clave":
     <campo>                      p. ej. "fecha_inicio", "horas", "matricula"
-    firma:<id>@<documento>       p. ej. "firma:responsable@carta_aceptacion"
+    firma:<id>@<documento>       p. ej. "firma:responsable@plan_trabajo"
     R005@<doc> / R007@<doc> / R008@<doc>   formato, páginas o legibilidad
 """
 

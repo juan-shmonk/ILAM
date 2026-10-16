@@ -24,7 +24,7 @@ from app.config import CONFIG_DOCS_DIR
 from app.services.analysis import textutil as tu
 
 # Orden en el que se muestran y se usan como referencia cuando falta el documento base.
-ORDEN_TIPOS = ["solicitud", "carta_aceptacion", "plan_trabajo"]
+ORDEN_TIPOS = ["solicitud", "plan_trabajo"]
 
 
 @lru_cache

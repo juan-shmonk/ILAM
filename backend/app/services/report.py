@@ -142,7 +142,7 @@ def construir_reporte(expediente_id: int, tramite: str, docs: list[dict[str, Any
         hall = [h.to_dict() for h in documento.evaluar_documento(d["tipo"], d["resultado"])]
         todos.extend(hall)
         # El estado de cada documento también considera las inconsistencias donde participa
-        # (por ejemplo, la carta de aceptación es la referencia de las fechas).
+        # (por ejemplo, la solicitud es la referencia de las fechas).
         involucrado = [h for h in cruzados if d["tipo"] in h["documentos"] or h["documento"] == d["tipo"]]
         secciones.append({
             "documento_id": d["id"],

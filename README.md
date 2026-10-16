@@ -4,7 +4,8 @@ Plataforma web que revisa los documentos de servicio social de un alumno **antes
 faltantes, datos que no coinciden entre documentos, firmas ausentes y problemas de formato, y explica qué corregir.
 **No sustituye la revisión oficial de la institución.**
 
-MVP con tres documentos: **solicitud**, **carta de aceptación** y **plan de trabajo**.
+MVP con dos documentos: **solicitud** y **plan de trabajo**. La carta de aceptación no se valida: la expide la
+dependencia donde se realiza el servicio y su contenido no depende del alumno.
 
 ```
 Alumno sube PDF/imagen → texto (PDF digital u OCR) → campos → reglas → comparación entre documentos → reporte
@@ -48,7 +49,7 @@ npm install
 npm run dev
 ```
 
-Abre <http://localhost:5173>, crea una cuenta, crea un expediente y sube los tres PDF de
+Abre <http://localhost:5173>, crea una cuenta, crea un expediente y sube los dos PDF de
 `backend\samples\01_correcto` (o de cualquier otro escenario para ver cómo se detectan los errores).
 
 **Alternativa de un solo servidor:** ejecuta `npm run build` en `frontend` y luego solo `uvicorn app.main:app`;

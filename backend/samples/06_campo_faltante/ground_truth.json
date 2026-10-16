@@ -1,13 +1,12 @@
 {
   "escenario": "06_campo_faltante",
-  "descripcion": "La carta de aceptación no tiene el nombre del responsable.",
+  "descripcion": "La solicitud no tiene la carrera.",
   "documentos": {
     "solicitud": "solicitud.pdf",
-    "carta_aceptacion": "carta_aceptacion.pdf",
     "plan_trabajo": "plan_trabajo.pdf"
   },
   "errores_esperados": [
-    "responsable"
+    "carrera"
   ],
   "estado_esperado": "REQUIERE_CORRECCION",
   "requiere_ocr": false,
@@ -15,18 +14,7 @@
     "solicitud": {
       "nombre": "Laura Beatriz Hernández Castillo",
       "matricula": "21530177",
-      "carrera": "Ingeniería en Sistemas Computacionales",
       "institucion": "H. Ayuntamiento de Benito Juárez",
-      "fecha_inicio": "2027-02-15",
-      "fecha_fin": "2027-08-15",
-      "horas": 480
-    },
-    "carta_aceptacion": {
-      "nombre": "Laura Beatriz Hernández Castillo",
-      "matricula": "21530177",
-      "carrera": "Ingeniería en Sistemas Computacionales",
-      "institucion": "H. Ayuntamiento de Benito Juárez",
-      "cargo_responsable": "Directora de Vinculación",
       "fecha_inicio": "2027-02-15",
       "fecha_fin": "2027-08-15",
       "horas": 480

@@ -18,7 +18,7 @@
     "carrera": "solicitud",
     "institucion": "solicitud",
     "programa": "solicitud",
-    "responsable": "carta_aceptacion",
+    "responsable": "plan_trabajo",
     "fecha_inicio": "solicitud",
     "fecha_fin": "solicitud",
     "horas": "plan_trabajo"
@@ -29,6 +29,5 @@
     "ocr_confianza_min": 60,
     "caracteres_min": 80,
     "tinta_firma_min": 0.004
-  },
-  "nota_documentos": "La carta de aceptación queda como documento opcional mientras no se tenga su formato oficial."
+  }
 }
