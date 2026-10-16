@@ -34,7 +34,7 @@ def test_expediente_incompleto_no_es_error(muestras):
     carpeta = muestras / "01_correcto"
     reporte = prevalidar_archivos({"solicitud": carpeta / "solicitud.pdf"})
     assert reporte["estado"] == "SIN_OBSERVACIONES"
-    assert set(reporte["completitud"]["faltantes"]) == {"carta_aceptacion", "plan_trabajo"}
+    assert set(reporte["completitud"]["faltantes"]) == {"plan_trabajo"}  # la carta es opcional
 
 
 def test_json_canonico_del_expediente(muestras):

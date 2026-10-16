@@ -1,59 +1,63 @@
 {
   "codigo": "plan_trabajo",
   "nombre": "Plan de trabajo",
-  "descripcion": "Plan de actividades que el alumno realizará durante el servicio social.",
-  "version_formato": "sintetico-2026",
+  "descripcion": "Formato oficial ITC-VI-PO-002-07 (revisión 0, aprobado el 17 de febrero de 2023).",
+  "formato": "ITC-VI-PO-002-07-rev0",
+  "principal": true,
+  "identificadores": ["plan de trabajo", "oficina de servicio social", "periodo reportado"],
   "titulos": ["plan de trabajo"],
-  "paginas": { "min": 1, "max": 3 },
+  "paginas": { "min": 1, "max": 1 },
+  "extraccion": "zonas",
+  "firma_digital_pendiente": true,
+  "_nota_zonas": "Ver solicitud.json. Este formato no tiene campo de horas: las horas se validarán con los reportes. El Vo. Bo. (11) de la Oficina de Servicio Social no se revisa porque lo pone la oficina al recibir el documento.",
   "campos": {
     "nombre": {
-      "tipo": "nombre",
-      "obligatorio": true,
-      "etiquetas": ["Nombre del alumno", "Nombre completo", "Nombre"]
-    },
-    "matricula": {
-      "tipo": "matricula",
-      "obligatorio": true,
-      "etiquetas": ["Matrícula", "Numero de control", "Número de control", "No. de control"]
+      "tipo": "nombre", "obligatorio": true,
+      "zona": { "ancla": ["(1)", "Nombre"] }
     },
     "carrera": {
-      "tipo": "texto",
-      "obligatorio": true,
-      "etiquetas": ["Carrera", "Programa educativo"]
+      "tipo": "texto", "obligatorio": true,
+      "zona": { "ancla": ["(2)", "Carrera"], "hasta": ["No de Control", "(3)"] }
     },
-    "institucion": {
-      "tipo": "texto",
-      "obligatorio": true,
-      "etiquetas": ["Institución receptora", "Institucion receptora", "Dependencia receptora", "Dependencia"]
-    },
-    "responsable": {
-      "tipo": "nombre",
-      "obligatorio": false,
-      "etiquetas": ["Responsable", "Nombre del responsable"]
+    "matricula": {
+      "tipo": "matricula", "obligatorio": true,
+      "zona": { "ancla": ["(3)", "No de Control"] }
     },
     "fecha_inicio": {
-      "tipo": "fecha",
-      "obligatorio": true,
-      "etiquetas": ["Fecha de inicio", "Inicio"]
+      "tipo": "fecha", "obligatorio": true,
+      "zona": { "ancla": ["(4)", "Del día"], "hasta": ["al día"] }
     },
     "fecha_fin": {
-      "tipo": "fecha",
-      "obligatorio": true,
-      "etiquetas": ["Fecha de término", "Fecha de termino", "Término", "Termino"]
+      "tipo": "fecha", "obligatorio": true,
+      "zona": { "ancla": ["al día"] }
     },
-    "horas": {
-      "tipo": "entero",
-      "obligatorio": true,
-      "etiquetas": ["Total de horas", "Horas totales", "Horas"]
+    "institucion": {
+      "tipo": "texto", "obligatorio": true,
+      "zona": { "ancla": ["(5)", "Dependencia"] }
+    },
+    "programa": {
+      "tipo": "texto", "obligatorio": true,
+      "zona": { "ancla": ["(6)", "Programa"] }
     },
     "actividades": {
-      "tipo": "lista",
-      "obligatorio": true,
-      "etiquetas": ["Actividades"]
+      "tipo": "parrafo", "obligatorio": true,
+      "zona": { "ancla": ["(7)", "Plan de trabajo:"], "modo": "debajo", "hasta": ["(10)", "FIRMA DEL INTERESADO"] }
+    },
+    "responsable": {
+      "tipo": "nombre", "obligatorio": true,
+      "separar_cargo": "cargo_responsable",
+      "zona": { "ancla": ["(8)"], "modo": "debajo", "ancho": 14, "alto": 4.5 }
+    },
+    "cargo_responsable": {
+      "tipo": "texto", "obligatorio": false
     }
   },
   "firmas": [
-    { "id": "alumno", "etiqueta": "Firma del alumno", "obligatoria": true },
-    { "id": "responsable", "etiqueta": "Firma del responsable", "obligatoria": true }
+    { "id": "responsable", "etiqueta": "Firma del responsable (8)", "obligatoria": true,
+      "zona": { "ancla": ["(8)"], "modo": "caja", "x0": 0, "x1": 12.5, "y0": -8, "y1": 1 } },
+    { "id": "sello", "etiqueta": "Sello de la dependencia (9)", "obligatoria": true,
+      "zona": { "ancla": ["(9)"], "modo": "caja", "x0": -5.5, "x1": 5.5, "y0": -11, "y1": -1.2 } },
+    { "id": "alumno", "etiqueta": "Firma del interesado (10)", "obligatoria": true,
+      "zona": { "ancla": ["(10)"], "modo": "caja", "x0": -7.5, "x1": 7.5, "y0": -2, "y1": 1 } }
   ]
 }

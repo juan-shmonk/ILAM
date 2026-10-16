@@ -61,6 +61,38 @@ def idioma_ocr() -> str | None:
     return _configurar()[1]
 
 
+def ocr_zona(imagen: Image.Image, multilinea: bool = False) -> tuple[str, float]:
+    """OCR de un recorte pequeño (el espacio de UN campo de un formato).
+
+    Devuelve (texto, confianza 0-100). Con ``multilinea=False`` Tesseract trata
+    el recorte como una sola línea (``--psm 7``), que es mucho más preciso para
+    valores cortos que leer la página completa.
+    """
+    import pytesseract
+    from pytesseract import Output
+
+    disponible, idioma = _configurar()
+    if not disponible:
+        raise RuntimeError("Tesseract no está disponible")
+    gris = ImageOps.expand(ImageOps.autocontrast(imagen.convert("L")), border=12, fill=255)
+    psm = 6 if multilinea else 7
+    datos = pytesseract.image_to_data(gris, lang=idioma, config=f"--psm {psm}", output_type=Output.DICT)
+    lineas: dict[tuple[int, int, int], list[str]] = {}
+    confs: list[float] = []
+    for i, texto in enumerate(datos["text"]):
+        texto = (texto or "").strip()
+        try:
+            conf = float(datos["conf"][i])
+        except (TypeError, ValueError):
+            conf = -1
+        if not texto or conf < 0:
+            continue
+        lineas.setdefault((datos["block_num"][i], datos["par_num"][i], datos["line_num"][i]), []).append(texto)
+        confs.append(conf)
+    texto_final = "\n".join(" ".join(ws) for _, ws in sorted(lineas.items()))
+    return texto_final, (sum(confs) / len(confs) if confs else 0.0)
+
+
 def ocr_imagen(imagen: Image.Image) -> PaginaOcr:
     """Ejecuta OCR sobre una imagen y reconstruye texto por líneas."""
     import pytesseract

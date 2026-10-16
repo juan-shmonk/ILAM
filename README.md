@@ -19,7 +19,7 @@ después como complemento; ver [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md).
 |---|---|---|
 | Python | 3.11 o superior | backend |
 | Node.js | 18 o superior (recomendado 20+) | frontend |
-| Tesseract OCR | 5.x (opcional) | leer **fotos y escaneos**. Los PDF con texto digital NO lo necesitan |
+| Tesseract OCR + idioma español | 5.x (muy recomendado) | leer **fotos, escaneos** y los datos que quedan como **imagen** dentro del PDF al llenar el formato oficial en Google Docs |
 
 No hace falta instalar PostgreSQL, Docker ni Redis: la base de datos es SQLite (un archivo dentro de `backend/data/`).
 
@@ -74,7 +74,12 @@ el número que importa es el que salga con los documentos que creen tus compañe
    `PREVAL_TESSERACT_CMD=C:\Program Files\Tesseract-OCR\tesseract.exe`.
 3. Reinicia el backend. Si funciona, `http://localhost:8000/api/salud` muestra `"ocr_disponible": true`.
 
-Sin OCR, subir una foto o un escaneo resulta en «Documento no legible» y el estado **Revisión manual**; nada se rompe.
+Sin OCR, subir una foto o un escaneo resulta en «Documento no legible» y el estado **Revisión manual**, y los campos de
+un PDF que vengan como imagen se marcan como «Campo no legible» (advertencia). Nada se rompe, pero con los formatos
+oficiales llenados en Google Docs **sí hace falta el OCR**: carrera, fechas, dependencia o titular suelen quedar como imagen.
+
+Para generar formatos oficiales de prueba (datos inventados): `python -m scripts.replicas_oficiales --salida replicas`
+(opciones `--imagenes carrera,fecha_inicio` y `--firmado`).
 
 ## Estructura
 

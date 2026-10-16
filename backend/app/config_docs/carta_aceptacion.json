@@ -2,7 +2,9 @@
   "codigo": "carta_aceptacion",
   "nombre": "Carta de aceptación",
   "descripcion": "Carta emitida por la institución receptora donde acepta al alumno.",
-  "version_formato": "sintetico-2026",
+  "formato": "sintetico-2026",
+  "identificadores": ["documento sintetico de prueba"],
+  "principal": true,
   "titulos": ["carta de aceptacion"],
   "paginas": { "min": 1, "max": 2 },
   "campos": {

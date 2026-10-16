@@ -30,6 +30,7 @@ class Campo:
     fuente: str = "regex"
     pagina: int | None = None  # página 1-indexada donde se encontró
     error: str | None = None
+    ilegible: bool = False  # el dato parece existir (p. ej. imagen pegada) pero no se pudo leer
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

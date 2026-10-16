@@ -12,6 +12,7 @@ from typing import Any
 
 from app.services import catalogo
 from app.services.analysis import textutil as tu
+from app.services.analysis import plantilla
 from app.services.analysis.extractors import extraer_campos
 from app.services.analysis.signature import detectar_firmas
 from app.services.analysis.text_extraction import ArchivoNoLegible, extraer_texto
@@ -37,11 +38,12 @@ def clasificar(texto: str) -> str | None:
     """
     normal = tu.normalizar_texto(texto)
     mejor: tuple[int, str] | None = None
-    for codigo, cfg in catalogo.tipos_documento().items():
-        for titulo in cfg["titulos"]:
-            pos = normal.find(tu.normalizar_texto(titulo))
-            if pos >= 0 and (mejor is None or pos < mejor[0]):
-                mejor = (pos, codigo)
+    for codigo in catalogo.tipos_documento():
+        for cfg in catalogo.formatos(codigo):
+            for titulo in cfg["titulos"]:
+                pos = normal.find(tu.normalizar_texto(titulo))
+                if pos >= 0 and (mejor is None or pos < mejor[0]):
+                    mejor = (pos, codigo)
     return mejor[1] if mejor else None
 
 
@@ -55,7 +57,7 @@ def analizar_documento(ruta: Path, mime: str, tipo: str) -> ResultadoDocumento:
         "metodo": "ninguno", "n_paginas": 0, "caracteres": 0, "confianza_ocr": None,
         "nitidez": None, "ocr_disponible": False, "legible": False, "motivo": None, "avisos": [],
     }
-    formato: dict[str, Any] = {"esperado": tipo, "detectado": None, "coincide": False}
+    formato: dict[str, Any] = {"esperado": tipo, "detectado": None, "coincide": False, "version": cfg["formato"]}
 
     try:
         texto = extraer_texto(ruta, mime)
@@ -91,8 +93,18 @@ def analizar_documento(ruta: Path, mime: str, tipo: str) -> ResultadoDocumento:
     detectado = clasificar(texto.texto)
     formato["detectado"] = detectado
     formato["coincide"] = detectado == tipo
+    # Versión del formato (oficial vigente, sintético de pruebas...) según el texto leído.
+    cfg = catalogo.elegir_formato(tipo, texto.texto) or cfg
+    formato["version"] = cfg["formato"]
 
-    confianza = 1.0 if texto.confianza_ocr is None else round(texto.confianza_ocr / 100, 3)
-    campos = {k: c.to_dict() for k, c in extraer_campos(texto.paginas, cfg["campos"], confianza).items()}
-    firmas = [f.to_dict() for f in detectar_firmas(ruta, texto, cfg.get("firmas", []), umbrales["tinta_firma_min"])]
+    if cfg.get("extraccion") == "zonas":
+        with plantilla.DocumentoLayout(ruta, mime, texto) as docl:
+            campos_obj = plantilla.extraer_por_zonas(docl, cfg["campos"])
+            firmas_obj = plantilla.detectar_firmas_por_zonas(docl, cfg.get("firmas", []), umbrales["tinta_firma_min"])
+    else:
+        confianza = 1.0 if texto.confianza_ocr is None else round(texto.confianza_ocr / 100, 3)
+        campos_obj = extraer_campos(texto.paginas, cfg["campos"], confianza)
+        firmas_obj = detectar_firmas(ruta, texto, cfg.get("firmas", []), umbrales["tinta_firma_min"])
+    campos = {k: c.to_dict() for k, c in campos_obj.items()}
+    firmas = [f.to_dict() for f in firmas_obj]
     return ResultadoDocumento(tipo, calidad, formato, campos, firmas)

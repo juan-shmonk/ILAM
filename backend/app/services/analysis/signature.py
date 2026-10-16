@@ -40,14 +40,20 @@ class ResultadoFirma:
         return asdict(self)
 
 
-def _medir_tinta(gris: np.ndarray, mascaras: list[tuple[int, int, int, int]]) -> tuple[float, float]:
-    """Devuelve (densidad, cobertura_x) de tinta en la zona, sin líneas ni texto impreso."""
+def medir_tinta(gris: np.ndarray, mascaras: list[tuple[int, int, int, int]]) -> tuple[float, float]:
+    """Devuelve (densidad, cobertura_x) de tinta en la zona, sin líneas ni texto impreso.
+
+    Se descartan las filas y columnas casi completamente oscuras: son la línea
+    de firma y los bordes de las tablas del formato, no tinta del firmante.
+    """
     zona = gris.copy()
     for x0, y0, x1, y1 in mascaras:  # blanquear texto impreso
         zona[max(y0, 0): max(y1, 0), max(x0, 0): max(x1, 0)] = 255
     oscuro = zona < UMBRAL_OSCURO
     filas_linea = oscuro.mean(axis=1) > UMBRAL_LINEA
     oscuro[filas_linea, :] = False  # quitar líneas horizontales (la línea de firma)
+    columnas_linea = oscuro.mean(axis=0) > UMBRAL_LINEA
+    oscuro[:, columnas_linea] = False  # quitar líneas verticales (bordes de tabla)
     if oscuro.size == 0:
         return 0.0, 0.0
     densidad = float(oscuro.mean())
@@ -82,7 +88,7 @@ def _firma_pdf_digital(pagina: fitz.Page, etiqueta: str, umbral: float) -> tuple
             (int((w[0] - clip.x0) * escala) - 1, int((w[1] - clip.y0) * escala) - 1,
              int((w[2] - clip.x0) * escala) + 2, int((w[3] - clip.y0) * escala) + 2)
         )
-    densidad, cobertura = _medir_tinta(gris, mascaras)
+    densidad, cobertura = medir_tinta(gris, mascaras)
     detectada = densidad >= umbral and cobertura >= COBERTURA_MIN_X
     return detectada, ResultadoFirma(
         id="", etiqueta=etiqueta, evaluable=True, detectada=detectada,
@@ -119,7 +125,7 @@ def _firma_ocr(imagen: Image.Image, palabras: list[Palabra], etiqueta: str, umbr
     for p in palabras:  # texto impreso reconocido con buena confianza
         if p.conf >= 70:
             mascaras.append((p.x - zx0 - 1, p.y - zy0 - 1, p.x + p.w - zx0 + 2, p.y + p.h - zy0 + 2))
-    densidad, cobertura = _medir_tinta(gris, mascaras)
+    densidad, cobertura = medir_tinta(gris, mascaras)
     detectada = densidad >= umbral and cobertura >= COBERTURA_MIN_X
     return ResultadoFirma(
         id="", etiqueta=etiqueta, evaluable=True, detectada=detectada,

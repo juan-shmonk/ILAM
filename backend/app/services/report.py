@@ -27,7 +27,8 @@ AVISO = (
 )
 
 # Campos que se muestran en la tabla comparativa, en este orden.
-CAMPOS_COMPARACION = ["nombre", "matricula", "carrera", "institucion", "responsable", "fecha_inicio", "fecha_fin", "horas"]
+CAMPOS_COMPARACION = ["nombre", "matricula", "carrera", "institucion", "programa", "responsable", "fecha_inicio",
+                      "fecha_fin", "horas"]
 
 
 def _plural(n: int, singular: str, plural: str) -> str:
@@ -77,6 +78,13 @@ def _valor_mostrar(campo: str, dato: dict[str, Any] | None) -> Any:
     return dato.get("valor") if dato.get("valor") not in (None, "") else dato.get("crudo")
 
 
+def _como_lista(valor: Any) -> list[Any]:
+    """Las actividades son una lista (formato sintético) o un párrafo (formato oficial)."""
+    if not valor:
+        return []
+    return valor if isinstance(valor, list) else [valor]
+
+
 def construir_expediente_json(expediente_id: int, tramite: str, docs: list[dict[str, Any]]) -> dict[str, Any]:
     """Estructura canónica del expediente (sección 8 del plan), ya normalizada."""
     fuente = catalogo.requisitos()["fuente_base"]
@@ -97,12 +105,13 @@ def construir_expediente_json(expediente_id: int, tramite: str, docs: list[dict[
             "alumno": {"nombre": canon("nombre"), "matricula": canon("matricula"), "carrera": canon("carrera")},
             "servicio": {
                 "institucion": canon("institucion"),
+                "programa": canon("programa"),
                 "responsable": canon("responsable"),
                 "fecha_inicio": canon("fecha_inicio"),
                 "fecha_fin": canon("fecha_fin"),
                 "horas": canon("horas"),
             },
-            "plan": {"actividades": canon("actividades") or []},
+            "plan": {"actividades": _como_lista(canon("actividades"))},
             "documentos": {
                 d["tipo"]: {
                     "version": d.get("version"),
