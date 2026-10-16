@@ -43,15 +43,15 @@ legibles y del formato correcto.
 | R018 | Institución receptora (Dependencia) | difusa* | solicitud |
 | R021 | Nombre del programa | difusa* | solicitud |
 | R019 | Total de horas | exacta | plan de trabajo |
-| R020 | Responsable | difusa* | carta de aceptación |
 | R014 | Expediente completo | INFO | faltan documentos / documento excluido |
 
 \* Difusa: tras quitar acentos, mayúsculas, títulos (Lic., Ing.) y ordenar palabras, una coincidencia total es OK;
 una similitud ≥ 80 % (nombres) o ≥ 75 % (texto) es **ADVERTENCIA** («se escribe distinto»); menos es **ERROR**.
 Umbrales en `requisitos.json → umbrales`.
 
-Documentos obligatorios del MVP: **solicitud** y **plan de trabajo**. La carta de aceptación es opcional mientras no
-se tenga su formato oficial. Los formatos oficiales actuales no tienen campo de horas: R004/R019 solo aplican a los
+Documentos del MVP: **solicitud** y **plan de trabajo**. La carta de aceptación quedó fuera del esquema porque la expide
+la dependencia receptora y el alumno no puede corregirla; por lo mismo se retiró R020 (responsable), que solo se
+comparaba contra la carta. Los formatos oficiales actuales no tienen campo de horas: R004/R019 solo aplican a los
 formatos sintéticos hasta que se agreguen los reportes.
 
 ## Cómo agregar una regla

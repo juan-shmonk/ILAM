@@ -37,7 +37,7 @@ Un tipo de documento puede tener varias **versiones de formato** (un archivo `co
 |---|---|---|
 | `solicitud.json` | Oficial ITC-VI-PO-002-02 rev. 0 (principal) | zonas |
 | `plan_trabajo.json` | Oficial ITC-VI-PO-002-07 rev. 0 (principal) | zonas |
-| `*_sintetico.json`, `carta_aceptacion.json` | Sintéticos de prueba (`samples/`) | etiquetas `Etiqueta: valor` |
+| `*_sintetico.json` | Sintéticos de prueba (`samples/`) | etiquetas `Etiqueta: valor` |
 
 Los formatos oficiales se diseñaron para llenarse a mano (líneas `____` con marcas `(n)`), y al llenarlos en Google
 Docs muchos valores quedan como **imágenes pegadas** sobre la línea. Por eso `analysis/plantilla.py`:

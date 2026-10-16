@@ -54,7 +54,7 @@ class Documento(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     expediente_id: Mapped[int] = mapped_column(ForeignKey("expedientes.id"), index=True)
-    tipo: Mapped[str] = mapped_column(String(50))  # solicitud | carta_aceptacion | plan_trabajo
+    tipo: Mapped[str] = mapped_column(String(50))  # solicitud | plan_trabajo
     version: Mapped[int] = mapped_column(Integer, default=1)
     activo: Mapped[bool] = mapped_column(Boolean, default=True)  # solo la última versión está activa
     nombre_original: Mapped[str] = mapped_column(String(255))

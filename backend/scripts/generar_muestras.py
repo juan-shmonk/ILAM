@@ -1,6 +1,6 @@
 """Generador de documentos SINTÉTICOS de servicio social con errores inyectados.
 
-Crea, por cada escenario, una carpeta con los tres PDF del MVP y un
+Crea, por cada escenario, una carpeta con los dos PDF del MVP (solicitud y plan de trabajo) y un
 ``ground_truth.json`` con la respuesta correcta (qué errores se inyectaron y
 qué datos contiene cada documento). Sirve para:
 
@@ -58,24 +58,17 @@ BASE: dict[str, Any] = {
 # Campos que aparecen en cada documento (igual que en config_docs/*.json)
 CAMPOS_POR_DOC = {
     "solicitud": ["nombre", "matricula", "carrera", "institucion", "fecha_inicio", "fecha_fin", "horas"],
-    "carta_aceptacion": ["nombre", "matricula", "carrera", "institucion", "responsable", "cargo_responsable",
-                         "fecha_inicio", "fecha_fin", "horas"],
     "plan_trabajo": ["nombre", "matricula", "carrera", "institucion", "responsable", "fecha_inicio",
                      "fecha_fin", "horas", "actividades"],
 }
 TITULOS = {
     "solicitud": "SOLICITUD DE SERVICIO SOCIAL",
-    "carta_aceptacion": "CARTA DE ACEPTACION",
     "plan_trabajo": "PLAN DE TRABAJO",
 }
 ETIQUETAS = {
     "solicitud": {"nombre": "Nombre del alumno", "matricula": "Matrícula", "carrera": "Carrera",
                   "institucion": "Institución receptora", "fecha_inicio": "Fecha de inicio",
                   "fecha_fin": "Fecha de término", "horas": "Total de horas"},
-    "carta_aceptacion": {"nombre": "Nombre del alumno", "matricula": "Matrícula", "carrera": "Carrera",
-                         "institucion": "Institución receptora", "responsable": "Responsable",
-                         "cargo_responsable": "Cargo del responsable", "fecha_inicio": "Fecha de inicio",
-                         "fecha_fin": "Fecha de término", "horas": "Total de horas"},
     "plan_trabajo": {"nombre": "Nombre del alumno", "matricula": "Matrícula", "carrera": "Carrera",
                      "institucion": "Institución receptora", "responsable": "Responsable",
                      "fecha_inicio": "Fecha de inicio", "fecha_fin": "Fecha de término",
@@ -84,12 +77,11 @@ ETIQUETAS = {
 # Firmas: (id, etiqueta)
 FIRMAS_POR_DOC = {
     "solicitud": [("alumno", "Firma del alumno")],
-    "carta_aceptacion": [("responsable", "Firma del responsable")],
     "plan_trabajo": [("alumno", "Firma del alumno"), ("responsable", "Firma del responsable")],
 }
 # Formato en que se escriben las fechas en cada documento (para probar el parser)
-FORMATO_FECHA = {"solicitud": "num", "carta_aceptacion": "texto", "plan_trabajo": "num"}
-ARCHIVOS = {"solicitud": "solicitud.pdf", "carta_aceptacion": "carta_aceptacion.pdf", "plan_trabajo": "plan_trabajo.pdf"}
+FORMATO_FECHA = {"solicitud": "num", "plan_trabajo": "texto"}
+ARCHIVOS = {"solicitud": "solicitud.pdf", "plan_trabajo": "plan_trabajo.pdf"}
 
 
 def _fecha_texto(iso: str, formato: str) -> str:
@@ -199,29 +191,29 @@ def _rasterizar(doc: fitz.Document, dpi: int = 200, borroso: bool = False, ruido
 #   "firma:<id>@<documento>"         firma no detectada
 #   "R005@<doc>", "R007@<doc>", "R008@<doc>"   formato, páginas o legibilidad del documento
 ESCENARIOS: list[dict[str, Any]] = [
-    {"id": "01_correcto", "descripcion": "Los tres documentos correctos y firmados.", "errores": [],
+    {"id": "01_correcto", "descripcion": "Los dos documentos correctos y firmados.", "errores": [],
      "estado": "SIN_OBSERVACIONES"},
-    {"id": "02_fecha_inicio_distinta", "descripcion": "La solicitud dice 10/02/2027 y la carta 15 de febrero de 2027.",
+    {"id": "02_fecha_inicio_distinta", "descripcion": "La solicitud dice 10/02/2027 y el plan 15 de febrero de 2027.",
      "cambios": {"solicitud": {"fecha_inicio": "2027-02-10"}}, "errores": ["fecha_inicio"]},
-    {"id": "03_matricula_distinta", "descripcion": "La matrícula del plan de trabajo no coincide con la de los otros.",
+    {"id": "03_matricula_distinta", "descripcion": "La matrícula del plan de trabajo no coincide con la de la solicitud.",
      "cambios": {"plan_trabajo": {"matricula": "21530717"}}, "errores": ["matricula"]},
-    {"id": "04_sin_firma_responsable", "descripcion": "La carta de aceptación no tiene la firma del responsable.",
-     "firmas": {"carta_aceptacion": {"responsable": False}}, "errores": ["firma:responsable@carta_aceptacion"]},
+    {"id": "04_sin_firma_responsable", "descripcion": "El plan de trabajo no tiene la firma del responsable.",
+     "firmas": {"plan_trabajo": {"responsable": False}}, "errores": ["firma:responsable@plan_trabajo"]},
     {"id": "05_horas_incorrectas", "descripcion": "El plan de trabajo dice 300 horas en lugar de 480.",
      "cambios": {"plan_trabajo": {"horas": 300}}, "errores": ["horas"]},
-    {"id": "06_campo_faltante", "descripcion": "La carta de aceptación no tiene el nombre del responsable.",
-     "omitir": {"carta_aceptacion": ["responsable"]}, "errores": ["responsable"]},
+    {"id": "06_campo_faltante", "descripcion": "La solicitud no tiene la carrera.",
+     "omitir": {"solicitud": ["carrera"]}, "errores": ["carrera"]},
     {"id": "07_nombre_con_variante", "descripcion": "La solicitud escribe un apellido distinto en el nombre.",
      "cambios": {"solicitud": {"nombre": "Laura Beatriz Hernandes Castillo"}}, "errores": ["nombre"]},
-    {"id": "08_documento_equivocado", "descripcion": "Se sube una carta de aceptación como si fuera el plan de trabajo.",
-     "titulo": {"plan_trabajo": "CARTA DE ACEPTACION"}, "errores": ["R005@plan_trabajo"]},
-    {"id": "09_fecha_termino_anterior", "descripcion": "La carta tiene fecha de término anterior a la de inicio.",
-     "cambios": {"carta_aceptacion": {"fecha_fin": "2027-01-10"}}, "errores": ["fecha_fin"]},
+    {"id": "08_documento_equivocado", "descripcion": "Se sube una solicitud como si fuera el plan de trabajo.",
+     "titulo": {"plan_trabajo": "SOLICITUD DE SERVICIO SOCIAL"}, "errores": ["R005@plan_trabajo"]},
+    {"id": "09_fecha_termino_anterior", "descripcion": "El plan tiene fecha de término anterior a la de inicio.",
+     "cambios": {"plan_trabajo": {"fecha_fin": "2027-01-10"}}, "errores": ["fecha_fin"]},
     {"id": "10_escaneo_borroso", "descripcion": "La solicitud es un escaneo muy borroso e ilegible.",
      "rasterizar": {"solicitud": "borroso"}, "errores": ["R008@solicitud"], "estado": "REVISION_MANUAL",
      "requiere_ocr": False},
-    {"id": "11_escaneo_correcto", "descripcion": "La carta es un escaneo limpio (requiere OCR) y todo es correcto.",
-     "rasterizar": {"carta_aceptacion": "limpio"}, "errores": [], "estado": "SIN_OBSERVACIONES",
+    {"id": "11_escaneo_correcto", "descripcion": "La solicitud es un escaneo limpio (requiere OCR) y todo es correcto.",
+     "rasterizar": {"solicitud": "limpio"}, "errores": [], "estado": "SIN_OBSERVACIONES",
      "requiere_ocr": True},
     {"id": "12_faltan_firmas_plan", "descripcion": "El plan de trabajo no tiene ninguna de sus dos firmas.",
      "firmas": {"plan_trabajo": {"alumno": False, "responsable": False}},
@@ -233,8 +225,8 @@ ESCENARIOS: list[dict[str, Any]] = [
      "errores": ["institucion"]},
     {"id": "15_pagina_sobrante", "descripcion": "La solicitud trae una tercera hoja en blanco.",
      "paginas_extra": {"solicitud": 2}, "errores": ["R007@solicitud"]},
-    {"id": "16_varios_errores", "descripcion": "Fecha de inicio distinta en la carta, sin firma del alumno en la solicitud y 400 horas en el plan.",
-     "cambios": {"carta_aceptacion": {"fecha_inicio": "2027-02-08"}, "plan_trabajo": {"horas": 400}},
+    {"id": "16_varios_errores", "descripcion": "Fecha de inicio distinta y 400 horas en el plan, sin firma del alumno en la solicitud.",
+     "cambios": {"plan_trabajo": {"fecha_inicio": "2027-02-08", "horas": 400}},
      "firmas": {"solicitud": {"alumno": False}},
      "errores": ["fecha_inicio", "horas", "firma:alumno@solicitud"]},
 ]

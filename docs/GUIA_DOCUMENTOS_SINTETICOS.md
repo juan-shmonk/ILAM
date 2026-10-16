@@ -12,7 +12,6 @@ equipo es **variedad y realismo**: documentos hechos en Word, con otro estilo, f
 mis_muestras/
 └── 21_mi_caso/
     ├── solicitud.pdf
-    ├── carta_aceptacion.pdf
     ├── plan_trabajo.pdf
     └── ground_truth.json
 ```
@@ -27,7 +26,6 @@ Cada dato va en **una línea con la forma `Etiqueta: valor`**. Las etiquetas ace
 | Documento | Título (debe aparecer) | Campos | Firmas |
 |---|---|---|---|
 | Solicitud | SOLICITUD DE SERVICIO SOCIAL | Nombre del alumno, Matrícula, Carrera, Institución receptora, Fecha de inicio, Fecha de término, Total de horas | Firma del alumno |
-| Carta de aceptación | CARTA DE ACEPTACIÓN | los anteriores + Responsable, Cargo del responsable | Firma del responsable |
 | Plan de trabajo | PLAN DE TRABAJO | los anteriores + Responsable, Actividades (lista numerada) | Firma del alumno y Firma del responsable |
 
 **Firmas:** dibuja una línea y escribe debajo el texto exacto «Firma del alumno» / «Firma del responsable». El espacio
@@ -48,10 +46,9 @@ Tesseract instalado.)
 ```json
 {
   "escenario": "21_mi_caso",
-  "descripcion": "La carta tiene la fecha de inicio distinta.",
+  "descripcion": "El plan de trabajo tiene la fecha de inicio distinta.",
   "documentos": {
     "solicitud": "solicitud.pdf",
-    "carta_aceptacion": "carta_aceptacion.pdf",
     "plan_trabajo": "plan_trabajo.pdf"
   },
   "errores_esperados": ["fecha_inicio"],
@@ -75,8 +72,8 @@ Tesseract instalado.)
 |---|---|
 | Un dato distinto entre documentos, o mal escrito en uno | el nombre del campo: `nombre`, `matricula`, `carrera`, `institucion`, `responsable`, `fecha_inicio`, `fecha_fin`, `horas` |
 | Un campo obligatorio vacío | el nombre del campo |
-| Firma faltante | `firma:alumno@solicitud`, `firma:responsable@carta_aceptacion`, … |
-| Documento equivocado (subes una carta como plan) | `R005@plan_trabajo` |
+| Firma faltante | `firma:alumno@solicitud`, `firma:responsable@plan_trabajo`, … |
+| Documento equivocado (subes la solicitud como plan) | `R005@plan_trabajo` |
 | Páginas de más o de menos | `R007@solicitud` |
 | Documento ilegible | `R008@solicitud` |
 

@@ -43,7 +43,7 @@ def _regenerar_reporte(db: Session, exp: models.Expediente) -> dict[str, Any]:
     db.expire_all()  # asegura leer los análisis recién guardados
     docs = []
     for d in exp.documentos:
-        if not d.activo or not d.analisis:
+        if not d.activo or not d.analisis or catalogo.tipo(d.tipo) is None:
             continue
         docs.append({"id": d.id, "tipo": d.tipo, "version": d.version, "nombre_original": d.nombre_original,
                      "resultado": d.analisis[-1].resultado})

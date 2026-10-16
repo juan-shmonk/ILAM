@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-DOCS = {"solicitud": "solicitud.pdf", "carta_aceptacion": "carta_aceptacion.pdf", "plan_trabajo": "plan_trabajo.pdf"}
+DOCS = {"solicitud": "solicitud.pdf", "plan_trabajo": "plan_trabajo.pdf"}
 
 
 def _registrar(cliente, email="ana@example.com"):
@@ -45,9 +45,9 @@ def test_flujo_completo_con_errores(cliente, muestras):
     assert ultimo["reporte"]["conteos"]["errores"] >= 2
 
     detalle = cliente.get(f"/api/expedientes/{exp['id']}").json()
-    assert len(detalle["documentos"]) == 3
+    assert len(detalle["documentos"]) == 2
     assert cliente.get(f"/api/expedientes/{exp['id']}/json").json()["expediente"]["servicio"]["horas"] == 400  # el plan (fuente base de las horas) dice 400
-    assert len(cliente.get(f"/api/expedientes/{exp['id']}/historial").json()) == 3
+    assert len(cliente.get(f"/api/expedientes/{exp['id']}/historial").json()) == 2
 
 
 def test_reemplazar_documento_crea_version_y_corrige(cliente, muestras):

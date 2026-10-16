@@ -33,7 +33,7 @@ export default function Expedientes() {
       {lista?.length === 0 && (
         <div className="tarjeta vacio">
           <p>Aún no tienes expedientes.</p>
-          <p className="suave">Crea uno para subir tu solicitud, carta de aceptación y plan de trabajo.</p>
+          <p className="suave">Crea uno para subir tu solicitud y tu plan de trabajo.</p>
         </div>
       )}
       <ul className="lista-tarjetas">

@@ -1,13 +1,12 @@
 {
   "escenario": "04_sin_firma_responsable",
-  "descripcion": "La carta de aceptación no tiene la firma del responsable.",
+  "descripcion": "El plan de trabajo no tiene la firma del responsable.",
   "documentos": {
     "solicitud": "solicitud.pdf",
-    "carta_aceptacion": "carta_aceptacion.pdf",
     "plan_trabajo": "plan_trabajo.pdf"
   },
   "errores_esperados": [
-    "firma:responsable@carta_aceptacion"
+    "firma:responsable@plan_trabajo"
   ],
   "estado_esperado": "REQUIERE_CORRECCION",
   "requiere_ocr": false,
@@ -17,17 +16,6 @@
       "matricula": "21530177",
       "carrera": "Ingeniería en Sistemas Computacionales",
       "institucion": "H. Ayuntamiento de Benito Juárez",
-      "fecha_inicio": "2027-02-15",
-      "fecha_fin": "2027-08-15",
-      "horas": 480
-    },
-    "carta_aceptacion": {
-      "nombre": "Laura Beatriz Hernández Castillo",
-      "matricula": "21530177",
-      "carrera": "Ingeniería en Sistemas Computacionales",
-      "institucion": "H. Ayuntamiento de Benito Juárez",
-      "responsable": "Lic. María Fernanda Ruiz Torres",
-      "cargo_responsable": "Directora de Vinculación",
       "fecha_inicio": "2027-02-15",
       "fecha_fin": "2027-08-15",
       "horas": 480

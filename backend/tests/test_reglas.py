@@ -34,14 +34,13 @@ def test_expediente_incompleto_no_es_error(muestras):
     carpeta = muestras / "01_correcto"
     reporte = prevalidar_archivos({"solicitud": carpeta / "solicitud.pdf"})
     assert reporte["estado"] == "SIN_OBSERVACIONES"
-    assert set(reporte["completitud"]["faltantes"]) == {"plan_trabajo"}  # la carta es opcional
+    assert set(reporte["completitud"]["faltantes"]) == {"plan_trabajo"}
 
 
 def test_json_canonico_del_expediente(muestras):
     carpeta = muestras / "01_correcto"
     reporte = prevalidar_archivos({t: carpeta / f for t, f in
-                                   {"solicitud": "solicitud.pdf", "carta_aceptacion": "carta_aceptacion.pdf",
-                                    "plan_trabajo": "plan_trabajo.pdf"}.items()})
+                                   {"solicitud": "solicitud.pdf", "plan_trabajo": "plan_trabajo.pdf"}.items()})
     exp = reporte["expediente_json"]["expediente"]
     assert exp["alumno"]["matricula"] == "21530177"
     assert exp["servicio"]["fecha_inicio"] == "2027-02-15"
@@ -52,8 +51,7 @@ def test_json_canonico_del_expediente(muestras):
 def test_hallazgo_explica_que_donde_y_que_hacer(muestras):
     carpeta = muestras / "02_fecha_inicio_distinta"
     reporte = prevalidar_archivos({t: carpeta / f for t, f in
-                                   {"solicitud": "solicitud.pdf", "carta_aceptacion": "carta_aceptacion.pdf",
-                                    "plan_trabajo": "plan_trabajo.pdf"}.items()})
+                                   {"solicitud": "solicitud.pdf", "plan_trabajo": "plan_trabajo.pdf"}.items()})
     h = next(h for h in reporte["cruzados"] if h["severidad"] == "ERROR")
     assert h["regla"] == "R003" and h["campo"] == "fecha_inicio"
     assert "10/02/2027" in h["mensaje"] and "15/02/2027" in h["mensaje"]
