@@ -80,6 +80,40 @@ def parse_fecha(texto: str) -> date | None:
         anio = int(m.group(3))
         if mes:
             return _crear_fecha(anio, mes, dia)
+    return _parse_fecha_partes(texto)
+
+
+# Palabras impresas en los formatos que rodean las partes de una fecha ("Del día 15 mes julio año 2026").
+_RELLENO_FECHA = {"del", "de", "dia", "al", "mes", "ano", "anio", "y", "fecha", "inicio", "termino", "terminacion"}
+
+
+def mes_desde_texto(palabra: str) -> int | None:
+    """Número de mes a partir de su nombre, tolerando errores de OCR ("encro" -> enero)."""
+    p = quitar_acentos(palabra).casefold()
+    if p in MESES:
+        return MESES[p]
+    if len(p) < 4:
+        return None
+    from rapidfuzz import fuzz, process
+
+    mejor = process.extractOne(p, list(MESES), scorer=fuzz.ratio)
+    return MESES[mejor[0]] if mejor and mejor[1] >= 75 else None
+
+
+def _parse_fecha_partes(texto: str) -> date | None:
+    """Fecha escrita en partes: "15/julio/2026", "15 mes julio año 2026", "15 jul 2026".
+
+    Se exige el orden día, mes, año y que el mes sea un nombre reconocible.
+    """
+    tokens = re.findall(r"[^\W\d_]+|\d+", quitar_acentos(texto).casefold())
+    tokens = [t for t in tokens if t not in _RELLENO_FECHA]
+    for i in range(len(tokens) - 2):
+        dia, mes, anio = tokens[i: i + 3]
+        if not (dia.isdigit() and len(dia) <= 2 and anio.isdigit() and len(anio) == 4):
+            continue
+        n_mes = mes_desde_texto(mes) if not mes.isdigit() else None
+        if n_mes:
+            return _crear_fecha(int(anio), n_mes, int(dia))
     return None
 
 

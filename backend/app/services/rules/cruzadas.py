@@ -24,12 +24,14 @@ COMPARACIONES: list[tuple[str, str, str]] = [
     ("R018", "institucion", "texto"),
     ("R019", "horas", "exacto"),
     ("R020", "responsable", "nombre"),
+    ("R021", "programa", "texto"),
 ]
 
 _TITULOS_REGLA = {
     "R015": "Nombre consistente", "R002": "Matrícula consistente", "R016": "Carrera consistente",
     "R003": "Fecha de inicio consistente", "R017": "Fecha de término consistente",
     "R018": "Institución consistente", "R019": "Horas consistentes", "R020": "Responsable consistente",
+    "R021": "Programa consistente",
 }
 
 

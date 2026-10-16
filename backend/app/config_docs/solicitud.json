@@ -1,48 +1,67 @@
 {
   "codigo": "solicitud",
   "nombre": "Solicitud de servicio social",
-  "descripcion": "Solicitud que el alumno presenta para iniciar su servicio social.",
-  "version_formato": "sintetico-2026",
+  "descripcion": "Formato oficial ITC-VI-PO-002-02 (revisión 0, aprobado el 17 de febrero de 2023).",
+  "formato": "ITC-VI-PO-002-02-rev0",
+  "principal": true,
+  "identificadores": ["solicitud de servicio social", "datos personales", "escolaridad"],
   "titulos": ["solicitud de servicio social"],
-  "paginas": { "min": 1, "max": 2 },
+  "paginas": { "min": 1, "max": 1 },
+  "extraccion": "zonas",
+  "_nota_zonas": "Cada campo se lee de una zona definida a partir de su ancla (la marca '(n)' impresa en el formato). Las distancias de 'ancho', 'alto', 'x0'...'y1' están en alturas del ancla. Sexo, teléfono, domicilio y semestre NO se extraen a propósito: no se usan en ninguna regla (minimización de datos personales).",
   "campos": {
     "nombre": {
-      "tipo": "nombre",
-      "obligatorio": true,
-      "etiquetas": ["Nombre del alumno", "Nombre completo", "Nombre"]
+      "tipo": "nombre", "obligatorio": true,
+      "zona": { "ancla": ["(1)", "Nombre completo"] }
     },
     "matricula": {
-      "tipo": "matricula",
-      "obligatorio": true,
-      "etiquetas": ["Matrícula", "Numero de control", "Número de control", "No. de control"]
+      "tipo": "matricula", "obligatorio": true,
+      "zona": { "ancla": ["(5)", "No. de Control"], "hasta": ["Carrera", "(6)"] }
     },
     "carrera": {
-      "tipo": "texto",
-      "obligatorio": true,
-      "etiquetas": ["Carrera", "Programa educativo"]
+      "tipo": "texto", "obligatorio": true,
+      "zona": { "ancla": ["(6)", "Carrera"] }
+    },
+    "periodo_escolar": {
+      "tipo": "texto", "obligatorio": false,
+      "zona": { "ancla": ["(7)", "Periodo"], "hasta": ["Semestre", "(8)"] }
     },
     "institucion": {
-      "tipo": "texto",
-      "obligatorio": true,
-      "etiquetas": ["Institución receptora", "Institucion receptora", "Dependencia receptora", "Dependencia"]
+      "tipo": "texto", "obligatorio": true,
+      "zona": { "ancla": ["(9)", "Dependencia Oficial"] }
+    },
+    "titular": {
+      "tipo": "nombre", "obligatorio": true,
+      "zona": { "ancla": ["(10)", "Titular de la Dependencia"] }
+    },
+    "puesto_titular": {
+      "tipo": "texto", "obligatorio": true,
+      "zona": { "ancla": ["(11)", "Puesto"] }
+    },
+    "programa": {
+      "tipo": "texto", "obligatorio": true,
+      "zona": { "ancla": ["(12)", "Nombre del Programa"] }
+    },
+    "modalidad": {
+      "tipo": "texto", "obligatorio": true,
+      "zona": { "ancla": ["(13)", "Modalidad"], "hasta": ["Fecha de Inicio", "(14)"] }
     },
     "fecha_inicio": {
-      "tipo": "fecha",
-      "obligatorio": true,
-      "etiquetas": ["Fecha de inicio", "Inicio"]
+      "tipo": "fecha", "obligatorio": true,
+      "zona": { "ancla": ["(14)", "Fecha de Inicio"], "hasta": ["Fecha de Terminación", "(15)"] }
     },
     "fecha_fin": {
-      "tipo": "fecha",
-      "obligatorio": true,
-      "etiquetas": ["Fecha de término", "Fecha de termino", "Término", "Termino"]
+      "tipo": "fecha", "obligatorio": true,
+      "zona": { "ancla": ["(15)", "Fecha de Terminación"] }
     },
-    "horas": {
-      "tipo": "entero",
-      "obligatorio": true,
-      "etiquetas": ["Total de horas", "Horas a cumplir", "Horas"]
+    "actividades": {
+      "tipo": "parrafo", "obligatorio": true,
+      "zona": { "ancla": ["(16)", "Actividades"], "modo": "debajo", "hasta": ["Tipo de programa", "(17)"] }
+    },
+    "tipo_programa": {
+      "tipo": "opcion", "obligatorio": true,
+      "zona": { "ancla": ["(17)", "Tipo de programa"], "modo": "debajo", "hasta": ["PARA USO EXCLUSIVO", "(18)"] }
     }
   },
-  "firmas": [
-    { "id": "alumno", "etiqueta": "Firma del alumno", "obligatoria": true }
-  ]
+  "firmas": []
 }

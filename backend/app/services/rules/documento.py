@@ -39,6 +39,9 @@ _ETIQUETAS_CAMPO = {
     "institucion": "institución receptora", "responsable": "responsable",
     "cargo_responsable": "cargo del responsable", "fecha_inicio": "fecha de inicio",
     "fecha_fin": "fecha de término", "horas": "total de horas", "actividades": "actividades",
+    "programa": "nombre del programa", "titular": "titular de la dependencia",
+    "puesto_titular": "puesto del titular", "modalidad": "modalidad", "periodo_escolar": "periodo",
+    "tipo_programa": "tipo de programa",
 }
 
 
@@ -106,7 +109,7 @@ def r001_nombre(ctx: ContextoDoc) -> list[Hallazgo]:
         return [ctx.h("R001", OK, "Nombre presente", f"Nombre del alumno: {ctx.campo('nombre')['valor']}.",
                       campo="nombre", pagina=ctx.campo("nombre").get("pagina"))]
     return [ctx.h("R001", ERROR, "Falta el nombre", "Falta el nombre del alumno.",
-                  accion="Escribe el nombre completo del alumno junto a la etiqueta «Nombre del alumno».",
+                  accion="Escribe el nombre completo del alumno en el espacio del nombre.",
                   campo="nombre")]
 
 
@@ -117,12 +120,37 @@ def r010_obligatorios(ctx: ContextoDoc) -> list[Hallazgo]:
     ]
     if not faltantes:
         return [ctx.h("R010", OK, "Campos obligatorios", "Todos los campos obligatorios están presentes.")]
-    return [
-        ctx.h("R010", ERROR, "Campo obligatorio vacío",
-              f"Falta el campo «{etiqueta_campo(k)}» en {ctx.nombre_doc}.",
-              accion=f"Completa el campo «{etiqueta_campo(k)}» antes de imprimir el documento.", campo=k)
-        for k in faltantes
-    ]
+    salida = []
+    for k in faltantes:
+        if ctx.campo(k).get("ilegible"):  # el dato parece estar, pero no se pudo leer: no es un error del alumno
+            salida.append(ctx.h(
+                "R010", ADVERTENCIA, "Campo no legible",
+                f"No se pudo leer el campo «{etiqueta_campo(k)}» en {ctx.nombre_doc}: {ctx.campo(k).get('error')}.",
+                accion="Revisa ese campo manualmente. Si lo llenaste pegando una imagen, escríbelo como texto.",
+                campo=k, pagina=ctx.campo(k).get("pagina")))
+        else:
+            salida.append(ctx.h(
+                "R010", ERROR, "Campo obligatorio vacío", f"Falta el campo «{etiqueta_campo(k)}» en {ctx.nombre_doc}.",
+                accion=f"Completa el campo «{etiqueta_campo(k)}» antes de imprimir el documento.", campo=k))
+    return salida
+
+
+def r023_opcion_unica(ctx: ContextoDoc) -> list[Hallazgo]:
+    """Listas de casillas ("Tipo de programa"): debe haber exactamente una marcada."""
+    salida = []
+    for k, spec in ctx.cfg["campos"].items():
+        if spec["tipo"] != "opcion" or not ctx.presente(k):
+            continue
+        marcadas = ctx.campo(k)["valor"]
+        if len(marcadas) == 1:
+            salida.append(ctx.h("R023", OK, "Opción marcada", f"{etiqueta_campo(k).capitalize()}: {marcadas[0]}.",
+                                campo=k))
+        else:
+            salida.append(ctx.h(
+                "R023", ADVERTENCIA, "Más de una opción marcada",
+                f"En «{etiqueta_campo(k)}» hay {len(marcadas)} opciones marcadas: {', '.join(marcadas)}.",
+                accion="Marca solo una opción.", campo=k, encontrado=marcadas))
+    return salida
 
 
 def r011_matricula(ctx: ContextoDoc) -> list[Hallazgo]:
@@ -148,7 +176,16 @@ def r012_fechas_validas(ctx: ContextoDoc) -> list[Hallazgo]:
             continue
         revisadas += 1
         campo = ctx.campo(k)
-        if not campo.get("valido"):
+        if not campo.get("valido") and campo.get("fuente") in ("ocr", "ocr_zona"):
+            # Leída por OCR: puede ser un error de lectura y no del documento.
+            salida.append(ctx.h(
+                "R012", ADVERTENCIA, "Fecha no legible",
+                f"No se pudo interpretar con certeza la {etiqueta_campo(k)}: se leyó «{campo['crudo']}».",
+                accion="Revisa la fecha manualmente. Para una lectura exacta sube el PDF exportado desde la "
+                       "computadora en lugar de un escaneo o una imagen.",
+                campo=k, pagina=campo.get("pagina"), encontrado=campo["crudo"],
+            ))
+        elif not campo.get("valido"):
             salida.append(ctx.h(
                 "R012", ERROR, "Fecha inválida",
                 f"No se pudo interpretar la {etiqueta_campo(k)}: «{campo['crudo']}».",
@@ -211,6 +248,8 @@ def r004_horas(ctx: ContextoDoc) -> list[Hallazgo]:
 def r006_firmas(ctx: ContextoDoc) -> list[Hallazgo]:
     salida: list[Hallazgo] = []
     obligatoria = {f["id"]: f.get("obligatoria", True) for f in ctx.cfg.get("firmas", [])}
+    # En un PDF generado por computadora (sin escanear) se asume que todavía no se imprime ni firma.
+    pendiente_en_digital = bool(ctx.cfg.get("firma_digital_pendiente")) and ctx.res["calidad"]["metodo"] == "texto_digital"
     for firma in ctx.res.get("firmas", []):
         etiqueta = firma["etiqueta"]
         if not firma["evaluable"]:
@@ -221,6 +260,12 @@ def r006_firmas(ctx: ContextoDoc) -> list[Hallazgo]:
         elif firma["detectada"]:
             salida.append(ctx.h("R006", OK, "Firma detectada", f"Se detectó una firma sobre «{etiqueta}».",
                                 campo=firma["id"], pagina=firma.get("pagina")))
+        elif obligatoria.get(firma["id"], True) and pendiente_en_digital:
+            salida.append(ctx.h(
+                "R006", INFO, "Firma pendiente",
+                f"El archivo todavía no tiene «{etiqueta}». Es normal si aún no lo imprimes: recábala "
+                "cuando ya no haya observaciones.", campo=firma["id"], pagina=firma.get("pagina"),
+            ))
         elif obligatoria.get(firma["id"], True):
             salida.append(ctx.h(
                 "R006", ADVERTENCIA, "Firma no detectada",
@@ -235,13 +280,13 @@ def r006_firmas(ctx: ContextoDoc) -> list[Hallazgo]:
 # Orden de ejecución de las reglas de contenido.
 REGLAS_CONTENIDO: list[Regla] = [
     r001_nombre, r010_obligatorios, r011_matricula, r012_fechas_validas,
-    r013_coherencia_fechas, r004_horas, r006_firmas,
+    r013_coherencia_fechas, r004_horas, r023_opcion_unica, r006_firmas,
 ]
 
 
 def evaluar_documento(tipo: str, resultado: dict[str, Any]) -> list[Hallazgo]:
     """Aplica todas las reglas de un documento sobre su resultado de análisis."""
-    cfg = catalogo.tipo(tipo)
+    cfg = catalogo.formato(tipo, resultado.get("formato", {}).get("version"))
     if cfg is None:
         return []
     ctx = ContextoDoc(tipo=tipo, cfg=cfg, req=catalogo.requisitos(), res=resultado)

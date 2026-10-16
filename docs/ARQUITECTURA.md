@@ -16,7 +16,7 @@ llegan (leer documentos difíciles, explicar en lenguaje natural, priorizar revi
                  │            storage ◄─────┤ guarda archivo (UUID, sha256)             │
                  │                          ▼                                           │
                  │  analysis/pipeline: texto (PDF digital | OCR) ─► compuerta legibilidad│
-                 │        ─► formato (título) ─► extractores (JSON config) ─► firmas     │
+                 │   ─► formato (título + versión) ─► extractor por zonas o etiquetas ─► firmas│
                  │                          │  resultado JSON  ──► tabla analisis       │
                  │                          ▼                                           │
                  │  rules/documento  +  rules/cruzadas  ─► hallazgos                    │
@@ -27,6 +27,32 @@ llegan (leer documentos difíciles, explicar en lenguaje natural, priorizar revi
 
 Todo el análisis corre dentro de la petición de subida (segundos). Si más adelante tarda demasiado, `analizar_documento`
 se mueve a una cola sin cambiar nada más.
+
+## Formatos y extracción por zonas
+
+Un tipo de documento puede tener varias **versiones de formato** (un archivo `config_docs/*.json` cada una, con
+`codigo`, `formato` e `identificadores`). `catalogo.elegir_formato` escoge la versión según el texto leído:
+
+| Archivo | Formato | Extracción |
+|---|---|---|
+| `solicitud.json` | Oficial ITC-VI-PO-002-02 rev. 0 (principal) | zonas |
+| `plan_trabajo.json` | Oficial ITC-VI-PO-002-07 rev. 0 (principal) | zonas |
+| `*_sintetico.json`, `carta_aceptacion.json` | Sintéticos de prueba (`samples/`) | etiquetas `Etiqueta: valor` |
+
+Los formatos oficiales se diseñaron para llenarse a mano (líneas `____` con marcas `(n)`), y al llenarlos en Google
+Docs muchos valores quedan como **imágenes pegadas** sobre la línea. Por eso `analysis/plantilla.py`:
+
+1. Obtiene las palabras con posición (texto digital, o el OCR de la página si es escaneo/foto) y separa lo que el
+   procesador de texto pegó (`22530305______Carrera:` → `22530305` + `Carrera:`).
+2. Busca el **ancla** de cada campo (la marca `(5)` o una etiqueta) y calcula su **zona**: a la derecha hasta la
+   siguiente etiqueta, debajo hasta otra marca, o una caja relativa. Las medidas van en alturas del ancla.
+3. Lee la zona: palabras digitales + **OCR de cada imagen incrustada** en ella (la imagen original, sin la línea de
+   guiones que confunde al OCR), intercaladas por posición. En escaneos usa las palabras del OCR de la página.
+4. Firmas y sello: mide tinta en una caja relativa al ancla (`(8)`, `(9)`, `(10)`), sin texto impreso, líneas ni
+   bordes de tabla.
+
+Si la institución cambia el formato, se agrega un JSON nuevo con otro `formato`; los expedientes anteriores siguen
+evaluándose con su versión (`analisis.resultado.formato.version`).
 
 ## Dónde se usa JSON
 
@@ -76,7 +102,10 @@ auditoria (usuario, acción, entidad, detalle)
 
 - La detección de firmas mide presencia de tinta en la zona sobre la etiqueta; no valida autenticidad y puede fallar
   con firmas muy tenues o fotos con sombras. Por eso es una **advertencia**, no un error.
-- Los extractores esperan líneas del tipo `Etiqueta: valor`. Formatos oficiales con tablas o texto corrido requerirán
-  patrones adicionales en el JSON (o el extractor con LLM).
+- La lectura por zonas depende de que el formato conserve sus marcas `(n)`. Un PDF exportado desde la computadora se
+  lee de forma exacta; en escaneos y fotos el OCR puede fallar con marcas pequeñas o firmas encima, y entonces el campo
+  o la firma se reportan como «no se pudo revisar» (advertencia), nunca como error del alumno.
+- Texto escrito **a mano** no se lee (Tesseract no reconoce manuscrita); ese caso requiere revisión manual o, en una fase
+  posterior, un modelo de visión.
 - Con el mismo documento base, un solo dato equivocado puede producir varias observaciones (una por cada documento que
   difiere). Es intencional, pero se puede agrupar más adelante.

@@ -3,17 +3,24 @@
   "nota": "Valores de EJEMPLO. Deben confirmarse contra el reglamento oficial vigente antes de usarse en serio. Cambiarlos aqui no requiere tocar codigo.",
   "tramite": "servicio_social",
   "horas_requeridas": 480,
-  "duracion_meses": { "min": 6, "max": 24 },
+  "duracion_meses": {
+    "min": 6,
+    "max": 24
+  },
   "matricula_regex": "^[A-Za-z0-9]{6,12}$",
-  "documentos_obligatorios": ["solicitud", "carta_aceptacion", "plan_trabajo"],
+  "documentos_obligatorios": [
+    "solicitud",
+    "plan_trabajo"
+  ],
   "fuente_base": {
     "nombre": "solicitud",
     "matricula": "solicitud",
     "carrera": "solicitud",
-    "institucion": "carta_aceptacion",
+    "institucion": "solicitud",
+    "programa": "solicitud",
     "responsable": "carta_aceptacion",
-    "fecha_inicio": "carta_aceptacion",
-    "fecha_fin": "carta_aceptacion",
+    "fecha_inicio": "solicitud",
+    "fecha_fin": "solicitud",
     "horas": "plan_trabajo"
   },
   "umbrales": {
@@ -22,5 +29,6 @@
     "ocr_confianza_min": 60,
     "caracteres_min": 80,
     "tinta_firma_min": 0.004
-  }
+  },
+  "nota_documentos": "La carta de aceptación queda como documento opcional mientras no se tenga su formato oficial."
 }
